@@ -1,0 +1,75 @@
+---
+title: "Assignment_1"
+output:
+  pdf_document: default
+  word_document: default
+date: "2025-09-05"
+---
+
+## Task-1: Getting the dataset from web source
+
+I downloaded the publicly accessible CNG stations' location data from the website of Department of Energy
+
+Reference:
+Office of Energy Efficiency and Renewable Energy. (n.d.). Natural Gas Fueling Station Locations.US Department of Energy. Retrieved from https://afdc.energy.gov/fuels/natural-gas-locations#/find/nearest?fuel=CNG
+
+
+## Task-2: Importing the dataset dowloaded previously
+
+```{r}
+library(readr)
+CNG_stations <- read_csv(".\\CNG_stations.csv")
+View(CNG_stations)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Task-3: Descriptive analysis
+
+```{r}
+library(tidyverse)
+#using quantitative variable
+summary(CNG_stations$`CNG Total Compression Capacity`)
+#state-wise number of cng stations
+CNG_stations %>% group_by(`State`) %>% summarise(tot_station = n())
+
+#using categorical variable
+summary(CNG_stations$`Facility Type`)
+#number of cng stations near different facilities
+facility_stations <- CNG_stations %>% group_by(`Facility Type`) %>% summarise(station_no = n())
+facility_stations
+save(facility_stations,file=".\\facility_stations.csv")
+```
+
+## Task-4: Transforming variable
+
+```{r}
+is.logical(CNG_stations$`Restricted Access`)
+#converting logical var to numeric
+as.numeric(CNG_stations$`Restricted Access`)
+```
+
+## Task-5: Plotting
+
+```{r}
+library(ggplot2)
+#histogram
+hist(CNG_stations$`CNG Total Compression Capacity`)
+
+#bar chart
+ggplot(CNG_stations, aes(x = `Owner Type Code`)) +
+  geom_bar(fill = "tomato") +
+  labs(title = "Total number of stations by owner type", x = "Owner Category", y = "Count")
+
+#scatter plot
+ggplot(CNG_stations, aes(x = `CNG Dispenser Num`, y = `CNG Storage Capacity`)) +
+  geom_point(color = "blue", size = 1.5) +
+  theme_classic()+
+  labs(title = "CNG storage capacity with dispenser numbers in stations")
+```
+
+
+
+
+
+

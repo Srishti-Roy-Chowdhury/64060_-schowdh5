@@ -1,0 +1,5 @@
+"0",""
+"0","#bar chart"
+"0","ggplot(CNG_stations, aes(x = `Owner Type Code`)) +"
+"0","  geom_bar(fill = ""tomato"") +"
+"0","  labs(title = ""Total number of stations by owner type"", x = ""Owner Category"", y = ""Count"")"

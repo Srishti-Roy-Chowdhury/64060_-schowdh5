@@ -1,0 +1,6 @@
+"0",""
+"0","#scatter plot"
+"0","ggplot(CNG_stations, aes(x = `CNG Dispenser Num`, y = `CNG Storage Capacity`)) +"
+"0","  geom_point(color = ""blue"", size = 1.5) +"
+"0","  theme_classic()+"
+"0","  labs(title = ""CNG storage capacity with dispenser numbers in stations"")"
