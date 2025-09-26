@@ -1,0 +1,257 @@
+---
+title: "Assignment_2"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document: default
+date: "2025-09-26"
+---
+
+## Loading packages
+
+```{r}
+library(readr)
+library(dplyr)
+library (caret)
+library (ISLR)
+library(class)
+library(gmodels)
+```
+
+## Importing the dataset
+
+```{r}
+UniversalBank <- read_csv("./UniversalBank.csv")
+```
+
+## Task-1: Perform kNN
+
+```{r}
+#Removing ID and ZIP Code from the data
+UniversalBank <- UniversalBank %>% select(-ID, -`ZIP Code`)
+
+
+#checking the datatype of all variables to identify the categorical and numeric for creating dummy and normalization
+str(UniversalBank)
+
+
+#Creating dummy variables for categorical data
+#As Education defined as numeric, converting it to factor/categorical to make dummy variables
+UniversalBank$Education <- as.factor(UniversalBank$Education)
+edu.dummy <- dummyVars(~Education, data=UniversalBank)
+edu.dummy <- predict(edu.dummy,UniversalBank)
+head(edu.dummy)
+#Adding dummy variables to the original dataset
+bank.dummy <- UniversalBank %>% select(-Education)
+bank.dummy <- cbind(bank.dummy, edu.dummy)
+
+
+#normalizing the numeric data
+bank.numeric <- UniversalBank %>% select(Age, Experience, Income, Family, CCAvg, Mortgage)
+bank.norm <- preProcess(bank.numeric, method=c('range'))
+bank.normalized <- predict(bank.norm,bank.numeric)
+summary(bank.normalized)
+
+
+#Adding two dataset: one with dummy variables and the normalized variables into one dataframe
+Unibank <- bank.dummy %>% select(-Age, -Experience, -Income, -Family, -CCAvg, -Mortgage)
+Unibank <- cbind(Unibank, bank.normalized)
+
+
+#Train and Valid data partition
+set.seed(135)  #help to keep the random with the same seed number
+train.index=createDataPartition(Unibank$`Personal Loan`,p=0.6,list=FALSE)
+train.data=Unibank[train.index,]     #60%(3000)
+valid.data=Unibank[-train.index,]    #40%(2000)
+
+
+#Organizing the test customer information
+#Defining new customer for test
+new.customer <- data.frame(
+  Age = 40,
+  Experience = 10,
+  Income = 84,
+  Family = 2,
+  CCAvg = 2,
+  Mortgage = 0,
+  Securities.Account = 0,
+  CD.Account = 0,
+  Online = 1,
+  CreditCard = 1,
+  Education1 = 0,
+  Education2 = 1,
+  Education3 = 0
+)
+#normalizing data for new_customer
+ncustomer.normalized <- predict(bank.norm,new.customer)
+summary(ncustomer.normalized)
+
+
+#separating the predictors and labels for kNN function
+#predictors
+train.predictors <- train.data[,2:14]
+ncustomer.predictors <- ncustomer.normalized
+#labels
+train.labels <- train.data[,1]
+
+
+#Model testing
+ncustomer.label <- knn(train.predictors, ncustomer.predictors, cl=train.labels, k=1)
+ncustomer.label
+```
+
+##**The result came negative: the value is 0 which depicts that the model predicts that the customer won't accept the loan**.
+
+
+
+
+
+## Task-2: The choice of k
+
+```{r}
+##As in last task, I didn't create test data, I am going to use the valid data to identify the k value
+
+#separating the predictors and labels for kNN function
+#predictors
+train.predictors <- train.data[,2:14]
+valid.predictors <- valid.data[,2:14]
+#labels
+train.labels <- train.data[,1]
+valid.labels <- valid.data[,1]
+
+#Exploring k values with the confusion matrix
+for (i in 1:15) {
+  model.prediction <- knn(train.predictors, valid.predictors, cl=train.labels, k=i)
+  CrossTable(x=valid.labels,y=model.prediction,prop.chisq = FALSE)
+}
+
+#Finding the k best value from accuracy data
+accuracy <- c()
+for (i in 1:15) {
+  model.prediction <- knn(train.predictors, valid.predictors, cl=train.labels, k=i)
+  accuracy <- mean(model.prediction == valid.labels)  # validation accuracy
+  accuracy <- print(accuracy)
+}
+
+#Finding the best k value from Kappa, as this is kind of imbalanced dataset
+for(i in 1:15) {
+  model.prediction <- knn(train = train.predictors, test = valid.predictors, cl = train.labels, k = i)
+  valid.labels  <- factor(valid.labels, levels = c("0", "1"))
+  confusion.matrix <- confusionMatrix(model.prediction, valid.labels, positive = "1")
+  print(confusion.matrix$overall['Kappa'])
+}
+```
+
+#**I tried multiple way to find the best k-created confusion matrix, calculated accuracy, and also the kappa to find the best k, as to me, it is an imbalanced dataset. The best k value I got is 1; only in this value I got highest accuracy, highest kappa and lowest False Negative cases, which is the most costly or risky case in this this model.**
+
+
+
+
+
+## Task-3: confusion matrix for the validation data that results from using the best k
+
+```{r}
+#separating the predictors and labels for kNN function
+#predictors
+train.predictors <- train.data[,2:14]
+valid.predictors <- valid.data[,2:14]
+#labels
+train.labels <- train.data[,1]
+valid.labels <- valid.data[,1]
+
+#According to the result of my last task, k=1 is the best choice for this model
+model.prediction <- knn(train.predictors, valid.predictors, cl=train.labels, k=1)
+CrossTable(x=valid.labels,y=model.prediction,prop.chisq = FALSE)
+```
+
+
+
+
+
+
+## Task-4: Classify the customer using the best k.
+
+```{r}
+#Organizing the test customer information
+#Defining new customer for test
+new.customer <- data.frame(
+  Age = 40,
+  Experience = 10,
+  Income = 84,
+  Family = 2,
+  CCAvg = 2,
+  Mortgage = 0,
+  Securities.Account = 0,
+  CD.Account = 0,
+  Online = 1,
+  CreditCard = 1,
+  Education1 = 0,
+  Education2 = 1,
+  Education3 = 0
+)
+#normalizing data for new_customer
+ncustomer.normalized <- predict(bank.norm,new.customer)
+
+
+#separating the predictors and labels for kNN function
+#predictors
+train.predictors <- train.data[,2:14]
+ncustomer.predictors <- ncustomer.normalized
+#labels
+train.labels <- train.data[,1]
+
+
+#Model testing
+ncustomer.label <- knn(train.predictors, ncustomer.predictors, cl=train.labels, k=1)
+ncustomer.label
+```
+
+#**From task-2, the best k value I got is 1, also, in task-1, we were supposed to use the k=1, and the customer detail for both of the task-1 & 4 is ame, so the result and the code of this task will be same as task-1. The customer won't accept the loan**
+
+
+
+
+
+## Task-5: Comparing the confusion matrix
+
+```{r}
+#Train, Valid, and Test data partition
+set.seed(246)  #help to keep the random with the same seed number
+train.index5=createDataPartition(Unibank$`Personal Loan`,p=0.5,list=FALSE)
+train.data5=Unibank[train.index5,]         #train(50%)
+split.data5=Unibank[-train.index5,]
+split.index5=createDataPartition(split.data5$`Personal Loan`,p=0.6,list=FALSE)
+valid.data5=split.data5[split.index5,]     #valid(30%)
+test.data5=split.data5[-split.index5,]     #test(20%)
+
+#Comparing train and test
+#separating the predictors and labels for kNN function
+#predictors
+train.predictors5 <- train.data5[,2:14]
+valid.predictors5 <- valid.data5[,2:14]
+test.predictors5 <- test.data5[,2:14]
+#labels
+train.labels5 <- train.data5[,1]
+valid.labels5 <- valid.data5[,1]
+test.labels5 <- test.data5[,1]
+
+#Model testing
+train.model <- knn(train = train.predictors5, test = train.predictors5, cl = train.labels5, k = 1)
+valid.model <- knn(train = train.predictors5, test = valid.predictors5, cl = train.labels5, k = 1)
+test.model  <- knn(train = train.predictors5, test = test.predictors5, cl = train.labels5, k = 1)
+
+CrossTable(x=train.labels5,y=train.model,prop.chisq = FALSE)
+CrossTable(x=valid.labels5,y=valid.model,prop.chisq = FALSE)
+CrossTable(x=test.labels5,y=test.model,prop.chisq = FALSE)
+
+train.acc <- mean(train.model == train.labels5) 
+valid.acc <- mean(valid.model == valid.labels)
+test.acc <- mean(test.model == test.labels5)
+
+train.acc
+valid.acc
+test.acc
+```
+
+#**From the confusion matrix, it is clearly visible that there is no error for train data model. The accuracy is 100% for this model, because all the samples have been used to train the model. On the other hand, the total error in valid data model is 59 and in test data model is 44 with False Negative cases 42 and 35 respectively. So, if we want to prioritize models based on their correct prediction or FN cases, test model is better than the valid data model. Also, in terms of accuracy, test model's accuracy rate is higher than the valid data model, but still the vaalues are closer to each other, which represents a good generalization**
