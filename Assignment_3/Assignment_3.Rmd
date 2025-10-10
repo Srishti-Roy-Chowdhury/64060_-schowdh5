@@ -1,0 +1,152 @@
+---
+title: "Assignment_3"
+output: word_document
+date: "2025-10-09"
+---
+
+## Loading packages
+
+```{r}
+library(readr)
+library(dplyr)
+library (caret)
+library (ISLR)
+library(class)
+library(gmodels)
+library(e1071)
+```
+
+## Importing the dataset
+
+```{r}
+UniversalBank <- read_csv("./UniversalBank.csv")
+```
+
+## Train and Valid data partition
+
+```{r}
+set.seed(135)  #help to keep the random with the same seed number
+train.index=createDataPartition(UniversalBank$`Personal Loan`,p=0.6,list=FALSE)
+train.data=UniversalBank[train.index,]     #60%(3000)
+valid.data=UniversalBank[-train.index,]    #40%(2000)
+
+#creating subset of train.data
+train.subset <- train.data %>% select(CreditCard, Online,`Personal Loan`)
+```
+
+## Task A: Use of table function to create pivot
+
+```{r}
+pivot.table <- table(CreditCard=train.subset$CreditCard, PersonalLoan=train.subset$`Personal Loan`, Online=train.subset$Online)
+dimnames(pivot.table) <- list(
+  CreditCard = c("CC_0", "CC_1"),
+  PersonalLoan = c("Loan_0", "Loan_1"),
+  Online = c("Online_0", "Online_1")
+)
+ftable(pivot.table)
+```
+
+## Task B: Calculating  the probability of loan acceptance (Loan = 1) conditional on having a bank credit card (CC = 1) and being an active user of online banking services (Online = 1)
+
+```{r}
+#The equation for this task will be, probability=(CC=1+Loan=1+Online=1)/(CC=1+Online=1)
+numerator <- pivot.table["CC_1", "Loan_1", "Online_1"]
+denominator <- sum(pivot.table["CC_1", , "Online_1"]) #both Loan=0 and Loan=1
+
+conditional.probability <- numerator / denominator
+print(conditional.probability)
+```
+
+## Task C: Creating two separate pivot tables for the training data.
+
+```{r}
+#Pivot Table 1: PersonalLoan vs Online
+pivot1 <- table(PersonalLoan = train.subset$`Personal Loan`, Online = train.subset$Online)
+dimnames(pivot1) <- list(
+  PersonalLoan = c("Loan_0", "Loan_1"),
+  Online = c("Online_0", "Online_1")
+)
+print(pivot1)
+
+#Pivot Table 2: PersonalLoan vs CreditCard
+pivot2 <- table(PersonalLoan = train.subset$`Personal Loan`, CreditCard = train.subset$CreditCard)
+dimnames(pivot2) <- list(
+  PersonalLoan = c("Loan_0", "Loan_1"),
+  CreditCard = c("CC_0", "CC_1")
+)
+print(pivot2)
+```
+
+## Task D: Computing probabilities
+
+```{r}
+#P(CC = 1 | Loan = 1)
+p_cc_loan1 <- pivot2["Loan_1", "CC_1"] / sum(pivot2["Loan_1", ])
+print(p_cc_loan1)
+
+#P(Online = 1 | Loan = 1) 
+p_online_loan1 <- pivot1["Loan_1", "Online_1"] / sum(pivot1["Loan_1", ])
+print(p_online_loan1)
+
+#P(Loan = 1)
+p_loan1 <- sum(train.subset$`Personal Loan` == 1) / nrow(train.subset)
+print(p_loan1)
+
+#P(CC = 1 | Loan = 0) 
+p_cc_loan0 <- pivot2["Loan_0", "CC_1"] / sum(pivot2["Loan_0", ])
+print(p_cc_loan0)
+
+#P(Online = 1 | Loan = 0)
+p_online_loan0 <- pivot1["Loan_0", "Online_1"] / sum(pivot1["Loan_0", ])
+print(p_online_loan0)
+
+#P(Loan = 0)
+p_loan0 <- sum(train.subset$`Personal Loan` == 0) / nrow(train.subset)
+print(p_loan0)
+```
+
+## Task E: Naive Bayes probability P(Loan = 1 | CC = 1, Online = 1)
+
+```{r}
+#In NB method, all events are considered independent. That's why in the equation all events are multiplied
+p_cc_online_loan1 <- p_cc_loan1 * p_online_loan1 * p_loan1
+p_cc_online_loan0 <- p_cc_loan0 * p_online_loan0 * p_loan0
+
+conditional.probability.NB <- p_cc_online_loan1 / (p_cc_online_loan1+p_cc_online_loan0) ##for the denominator, CC=1 and Online=1 cases for both Loan=0 and Loan=1 will be considered
+print(conditional.probability.NB)
+```
+
+## Task F: Comparing this value with the one obtained from the pivot table in (B).
+
+```{r}
+#The value of conditational.probability= 0.0831793
+#The value of conditional.probability.NB= 0.08624632
+
+#The difference between probability values (~0.3%) is very small, so using Naive Bayes in this case still gives a good approximation.So, in terms of computational time, NB method will be more appropriate to use. But as we do some assumptions in NB method, considering that the result of B will be more accurate estimation as it is directly created from the train data.
+```
+
+## Task G
+
+```{r}
+#To commute P(Loan=1 | CC=1, Online=1), I need following entries.
+#For numerator, P(CC=1∣Loan=1);P(Online=1∣Loan=1);P(Loan=1)
+#For denominator, P(CC=1∣Loan=1);P(Online=1∣Loan=1);P(Loan=1;) P(CC=1∣Loan0);P(Online=1∣Loan0);P(Loan0); 
+
+#Following marked entries of the PivotTable, created in task A, will be needed for computing P(Loan=1 | CC=1, Online=1) without any prior assumption, considering the regular conditional praobility equation
+ftable(pivot.table)
+
+#Runing naive Bayes on the data.
+nb_model <- naiveBayes(`Personal Loan`~CreditCard+Online,data=train.subset)
+#Following marked entries of the nb_model will be needed for computing P(Loan=1 | CC=1, Online=1), considering the equation that assumes the events independent
+print(nb_model)
+
+#Examining the model output on training data, corresponds to P(Loan=1 | CC=1, Online=1)
+#Creating a data to test/examine the model
+new_customer <- data.frame(CreditCard = 1, Online = 1)
+test <- predict(nb_model, newdata = new_customer, type = "raw")
+print(test)
+#The value of the probability of loan acceptance in this task is 0.08383477, where the value I got in task E is 0.08624632. Though the values are different, the differences is not too significant.
+```
+
+
+

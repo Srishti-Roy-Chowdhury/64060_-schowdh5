@@ -1,0 +1,7 @@
+"0","set.seed(135)  #help to keep the random with the same seed number"
+"0","train.index=createDataPartition(UniversalBank$`Personal Loan`,p=0.6,list=FALSE)"
+"0","train.data=UniversalBank[train.index,]     #60%(3000)"
+"0","valid.data=UniversalBank[-train.index,]    #40%(2000)"
+"0",""
+"0","#creating subset of train.data"
+"0","train.subset <- train.data %>% select(CreditCard, Online,`Personal Loan`)"

@@ -1,0 +1,4 @@
+"0","#The value of conditational.probability= 0.0831793"
+"0","#The value of conditional.probability.NB= 0.08624632"
+"0",""
+"0","#The difference between probability values (~0.3%) is very small, so using Naive Bayes in this case still gives a good approximation.So, in terms of computational time, NB method will be more appropriate to use. But as we do some assumptions in NB method, considering that the result of B will be more accurate estimation as it is directly created from the train data."
