@@ -1,0 +1,1 @@
+"0","pharma %>% group_by(cluster,Location) %>% summarise(LocationC=n())"

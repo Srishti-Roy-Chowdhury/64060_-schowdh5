@@ -1,0 +1,6 @@
+"0","#On the other hand, the silhouette method provides a clearer indication, identifying k = 5 as the optimal cluster number. Compared to the elbow method, the silhouette approach is generally more reliable, objective, and easier to interpret. It not only evaluates how cohesive (tight) the clusters are internally but also how well-separated they are from each other."
+"0","#Therefore, I choose the k value 5"
+"0",""
+"0","#visualizing the clusters"
+"0","pharma.k <- kmeans(pharma.num.scaled,centers=5,nstart=25)"
+"0","fviz_cluster(pharma.k, data=pharma.num.scaled)"

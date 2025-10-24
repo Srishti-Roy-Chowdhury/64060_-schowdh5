@@ -1,0 +1,5 @@
+"0","#adding the cluster to the original dataset to summarize and find relation among cluster and variables"
+"0","pharma$cluster <- pharma.k$cluster"
+"0","#creating tables with mean values of all variables for each cluster"
+"0","pharma.num.summary <- aggregate(pharma.num, by = list(Cluster = pharma$cluster), mean)"
+"0","pharma.num.summary"

@@ -1,0 +1,2 @@
+"0","#creating table to understand the distribution of these categorical variables within clusters"
+"0","pharma %>% group_by(cluster,Median_Recommendation) %>% summarise(RecomC=n())"

@@ -1,0 +1,2 @@
+"0","#The elbow method suggests that the optimal number of clusters lies around 4, 5, or 6, because from 4 it started decreasing at a much smaller rate. In other words, k=4/5/6 provides the best value between bias and overfitting. However, the exact number of clusters remains somewhat ambiguous based on this method alone."
+"0","fviz_nbclust(pharma.num.scaled, kmeans, method=""silhouette"")  #Silhouette method"

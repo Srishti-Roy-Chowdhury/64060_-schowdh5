@@ -1,0 +1,8 @@
+"0",""
+"0","#Cluster 1- Canada, US based and mostly NYSE"
+"0","#Cluster 2- moderate buy-sell and mostly NYSE"
+"0","#Cluster 3- Mix reccomendation type, mostly US, NYSE"
+"0","#Cluster 4- Mix of exchange type"
+"0","#Cluster 5- Mostly US based and NYSE"
+"0",""
+"0","#From my perspective I didn't find any specific pattern among those variables and clusters. But I have some general observation that most companies are Us-based and exchange type is NYSE accross the clusters. Most reccomendation variations are in Cluster 3 and most excange variations are in Cluster 4"
