@@ -1,0 +1,6 @@
+"0","#Applying hierarchical clustering to the data using Euclidean distance to the normalized measurements. "
+"0","df <- scale(cereals.num)   #normalizing data"
+"0","dist <- dist(df, method=""euclidean"")   #calculating euclidean distance matrix"
+"0",""
+"0","hc.ward <- hclust(dist, method=""ward"")"
+"0","plot(hc.ward, cex=0.6, hang=-1)"

@@ -1,26 +1,26 @@
 {
-    "id": "14F207CD",
-    "path": "~/2-1/Machine Learning/64060_-schowdh5/Assignment_4/Assignment_4.Rmd",
-    "project_path": "Assignment_4.Rmd",
+    "id": "5DA8C087",
+    "path": "~/2-1/Machine Learning/64060_-schowdh5/Assignment_5/Assignment_5.Rmd",
+    "project_path": "Assignment_5.Rmd",
     "type": "r_markdown",
-    "hash": "4090815148",
+    "hash": "3782609305",
     "contents": "",
     "dirty": false,
-    "created": 1761284640687.0,
+    "created": 1762836113552.0,
     "source_on_save": false,
     "relative_order": 1,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "40,0",
-        "scrollLine": "40"
+        "cursorPosition": "179,0",
+        "scrollLine": "168"
     },
     "folds": "",
-    "lastKnownWriteTime": 1761284753,
+    "lastKnownWriteTime": 1762836212,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1761284753514,
+    "last_content_update": 1762836212736,
     "read_only": false,
     "read_only_alternatives": []
 }
