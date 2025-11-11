@@ -1,0 +1,8 @@
+"0",""
+"0","#calculating training data cluster centroids"
+"0","train_clusters <- cutree(hc.clusterA, k = 4)"
+"0","train.data <- as.data.frame(train.data)"
+"0","train.data$cluster <- train_clusters"
+"0","centroid.A <- aggregate(train.data, by = list(Cluster = train_clusters), mean)"
+"0",""
+"0","#****I couldn't solve the next part. I think this part is not covered in the class****#"

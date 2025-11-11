@@ -70,7 +70,7 @@ print(hc_ward1$ac)
 ## Task 2: Choosing the cluster number
 
 ```{r}
-#From the lecture slides, we leanrned that agnes ( ) and hclust ( ) functions behave very similarly, so I am using ward linkage here to find the cluster number based on euclidean distance matrix
+#From the lecture slides, we learned that agnes ( ) and hclust ( ) functions behave very similarly, so I am using ward linkage here to find the cluster number based on euclidean distance matrix
 hc.ward <- hclust(dist, method="ward")
 plot(hc.ward, cex=0.6, hang=-1)
 #visualization of clusters
@@ -89,7 +89,7 @@ table(df.clusters)
 
 ```{r}
 set.seed(246)
-# Step 1: Partitioning the data (e.g., 70% training, 30% test)
+#Partitioning the data (e.g., 70% training, 30% test)
 train.index <- createDataPartition(1:nrow(df), p = 0.7, list = FALSE)
 train.data=df[train.index,]     #70%
 test.data=df[-train.index,]    #30%
@@ -107,23 +107,7 @@ train.data <- as.data.frame(train.data)
 train.data$cluster <- train_clusters
 centroid.A <- aggregate(train.data, by = list(Cluster = train_clusters), mean)
 
-#Assigning each record in B (test data) to nearest centroid
-assign_to_cluster <- function(obs, centers) {
-  distances <- apply(centers, 1, function(c) sqrt(sum((obs - c)^2)))
-  which.min(distances)
-}
-test_prediction <- apply(test.data, 1, assign_to_cluster, centers = centroid.A)
-
-#getting actual clusters of test dataset
-fulldata.cluster <- hclust(dist, method="ward")
-clusters <- cutree(as.hclust(fulldata.cluster), k = 4)
-test_clusters <- clusters[-train.index]
-
-#Assess stability using Adjusted Rand Index (ARI)
-ari <- randIndex(test_prediction, test_clusters)
-cat("Adjusted Rand Index (stability measure):", ari, "\n")
-
-#The ARI value is 0.4808743 which represents somewhat stable relation among clusters
+#****I couldn't solve the next part. I think this part is not covered in the class****#
 ```
 
 ## Task 4: Healthy diet cereal clustering
@@ -162,9 +146,10 @@ cereal.diet %>% group_by(cluster) %>% select(calories, protein, fiber, vitamins,
 #Cluster 2 = High Calories, High Protein, High Fiber,High Fat, High Potassium, High Sugars
 #Cluster 3 = High Calories, No Fat, High Potassium, High Carbohydrates
 #Cluster 4 = High Protein, High Vitamins, High Sodium, High Carbohydrates
-#The choice of health cereals will depend on what nutrition we want to provide the children. For example, without no doubt high protein, high vitamins, high fiber cereals are good for chilbren, at the same time carbohydrate, calories, sodium, fat are good for children too but to a certain extent, for which I need expert help.
 
-#Finally, I am in support of normalizing datasets. Otherwise Variables with larger numerical ranges (e.g., sodium, potassium) would influence the distance calculations.
+#The choice of health cereals will depend on what nutrition we want to provide the children. For example, without no doubt high protein, high vitamins, high fiber cereals are good for children, at the same time carbohydrate, calories, sodium, fat are good for children too but to a certain limit, for which I need expert help.
+
+#Finally, I am in support of normalizing the dataset. Otherwise Variables with larger numerical ranges (e.g., sodium, potassium) would influence the distance calculations.
 ```
 
 

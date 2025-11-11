@@ -1,0 +1,3 @@
+"0","#From the lecture slides, we learned that agnes ( ) and hclust ( ) functions behave very similarly, so I am using ward linkage here to find the cluster number based on euclidean distance matrix"
+"0","hc.ward <- hclust(dist, method=""ward"")"
+"0","plot(hc.ward, cex=0.6, hang=-1)"

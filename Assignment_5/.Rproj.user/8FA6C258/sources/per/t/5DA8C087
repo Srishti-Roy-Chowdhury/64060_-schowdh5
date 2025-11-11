@@ -3,7 +3,7 @@
     "path": "~/2-1/Machine Learning/64060_-schowdh5/Assignment_5/Assignment_5.Rmd",
     "project_path": "Assignment_5.Rmd",
     "type": "r_markdown",
-    "hash": "3782609305",
+    "hash": "3547514701",
     "contents": "",
     "dirty": false,
     "created": 1762836113552.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "179,0",
-        "scrollLine": "168"
+        "cursorPosition": "72,121",
+        "scrollLine": "67"
     },
     "folds": "",
-    "lastKnownWriteTime": 1762836212,
+    "lastKnownWriteTime": 1762884454,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1762836212736,
+    "last_content_update": 1762884454794,
     "read_only": false,
     "read_only_alternatives": []
 }
